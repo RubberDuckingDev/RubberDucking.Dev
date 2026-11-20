@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RubberDucking.Dev — Personal Dev Log &amp; Playground</title>
+  <meta name="description" content="The personal corner of the internet for a developer who solves bugs by explaining them to inanimate objects." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦆</text></svg>" />
+  <style>
+    :root {
+      --bg: #fcfcfb;
+      --surface: #ffffff;
+      --border: #e5e5e3;
+      --text: #18181b;
+      --text-muted: #52525b;
+      --accent: #eab308;
+      --accent-dark: #ca8a04;
+      --accent-soft: #fef9c3;
+      --tag-bg: #f4f4f5;
+      --radius: 12px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0c0c0e;
+      --surface: #141417;
+      --border: #27272a;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #facc15;
+      --accent-dark: #eab308;
+      --accent-soft: rgba(250, 204, 21, 0.12);
+      --tag-bg: #1f1f23;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .container {
+      max-width: 680px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      padding: 2rem 0 1.5rem;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .site-title span {
+      color: var(--accent-dark);
+    }
+
+    [data-theme="dark"] .site-title span {
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    main {
+      flex: 1;
+      padding: 1.5rem 0 3.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .intro {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .duck-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .duck-btn {
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 60px;
+      height: 60px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+      flex-shrink: 0;
+    }
+
+    .duck-btn:hover {
+      transform: rotate(-6deg) scale(1.05);
+    }
+
+    .duck-btn:active {
+      transform: scale(0.94);
+    }
+
+    .speech-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      position: relative;
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      width: fit-content;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    section h2 {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .project-card:hover {
+      border-color: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .project-card:hover {
+      border-color: var(--accent);
+    }
+
+    .project-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .project-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .project-arrow {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .project-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      background: var(--tag-bg);
+      color: var(--text-muted);
+      padding: 0.18rem 0.55rem;
+      border-radius: 6px;
+    }
+
+    .notes-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .notes-list li {
+      padding-left: 1.35rem;
+      position: relative;
+    }
+
+    .notes-list li::before {
+      content: "→";
+      font-family: var(--font-mono);
+      color: var(--accent-dark);
+      position: absolute;
+      left: 0;
+    }
+
+    [data-theme="dark"] .notes-list li::before {
+      color: var(--accent);
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+    }
+
+    .links a {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+      transition: border-color 0.15s ease;
+    }
+
+    .links a:hover {
+      border-color: var(--accent-dark);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="/" class="site-title">rubberducking<span>.dev</span></a>
+      <button type="button" class="theme-btn" id="themeToggle">dark</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <div class="duck-row">
+        <button type="button" class="duck-btn" id="duckBtn" title="Click the duck" aria-label="Squeak the rubber duck">
+          <svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M22.5 13.5C22.5 9.91015 19.5899 7 16 7C12.4101 7 9.5 9.91015 9.5 13.5C9.5 15.17 10.13 16.69 11.17 17.84C8.42 18.88 6.5 21.15 6.5 23.8C6.5 27.22 10.75 29 16 29C21.25 29 25.5 27.22 25.5 23.8C25.5 21.15 23.58 18.88 20.83 17.84C21.87 16.69 22.5 15.17 22.5 13.5Z" fill="#FACC15"/>
+            <path d="M22 13.5L28 15L22.5 17" fill="#F97316"/>
+            <circle cx="18.5" cy="12" r="1.5" fill="#18181B"/>
+          </svg>
+        </button>
+        <div class="speech-bubble" id="duckQuote">
+          "Have you tried explaining line 42 out loud yet?" (click me)
+        </div>
+      </div>
+
+    <section>
+      <h2>House Rules</h2>
+      <ul class="notes-list">
+        <li>Explain the problem out loud before reaching for a new library.</li>
+        <li>Boring technology in production; weird technology on weekends.</li>
+        <li>Deleting 200 lines of code feels better than writing 500.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Find Me Elsewhere</h2>
+      <div class="links">
+        <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="mailto:hello@rubberducking.dev">Email</a>
+        <a href="#">Notes / Blog</a>
+        <a href="#">RSS</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>RubberDucking.Dev</span>
+      <span>No trackers. No cookies. Just HTML.</span>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
+    const savedTheme = localStorage.getItem("rd-theme");
+
+    if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      root.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "light";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      root.setAttribute("data-theme", isDark ? "light" : "dark");
+      themeToggle.textContent = isDark ? "dark" : "light";
+      localStorage.setItem("rd-theme", isDark ? "light" : "dark");
+    });
+
+    const quotes = [
+      '"Did you save the file before refreshing?"',
+      '"It works on my pond."',
+      '"Check the environment variables. Again."',
+      '"That TODO comment is from 2023."',
+      '"Quack. Sounds like a DNS issue."',
+      '"Have you tried turning your assumptions off and on again?"'
+    ];
+
+    let idx = 0;
+    const duckBtn = document.getElementById("duckBtn");
+    const duckQuote = document.getElementById("duckQuote");
+
+    function playSqueak() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(620, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(920, ctx.currentTime + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(540, ctx.currentTime + 0.16);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.17);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.17);
+      } catch (e) {}
+    }
+
+    duckBtn.addEventListener("click", () => {
+      playSqueak();
+      duckQuote.textContent = quotes[idx % quotes.length];
+      idx++;
+    });
+  </script>
+</body>
+</html>
